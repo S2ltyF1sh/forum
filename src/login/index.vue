@@ -2,7 +2,6 @@
   <div>
     <!-- 登录块 -->
     <div class="login_" v-if="!isLogin">
-      <button class="button_" @click="view_()">首页</button>
       <!-- 登录详细块 -->
       <div class="login_container" v-if="loginSuccess">
         <form class="login_form">

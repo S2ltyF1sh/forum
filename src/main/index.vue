@@ -40,7 +40,6 @@
 
           <button class="btn btn_inline" @click="login_()" v-if="!isLogin">注册</button>
           <button class="btn btn_inline" @click="logout_()" v-if="isLogin">退出登录</button>
-          <button class="btn btn_inline" @click="test_()">测试</button>
         </div>
       </div>
     </header>
@@ -94,6 +93,7 @@
   * {
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
   }
 
   #app {

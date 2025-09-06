@@ -11,11 +11,11 @@
     <!-- 举报管理视图 -->
     <div class="admin-view" v-if="currentView === 'admin' && user_type === 2">
       <h3>举报管理</h3>
-      <div class="admin-controls">
+      <!-- <div class="admin-controls">
         <button class="btn btn-primary" @click="fetchUnapprovedReports">
           <i class="fas fa-sync-alt"></i> 刷新未审批举报
         </button>
-      </div>
+      </div> -->
       <div class="reports-list">
         <div v-if="unapprovedReports.length === 0" class="empty-reports">
           暂无未审批举报
@@ -36,7 +36,7 @@
             <button class="btn btn-success" @click="approveReport(report.report_id, 1)">
               <i class="fas fa-check"></i> 通过
             </button>
-            <button class="btn btn-danger" @click="approveReport(report.report_id, 0)">
+            <button class="btn btn-danger" @click="approveReport(report.report_id, 2)">
               <i class="fas fa-times"></i> 驳回
             </button>
           </div>
@@ -606,6 +606,11 @@
     }
   }
   })
+  watch(() => props.currentView, (newView) => {
+    if (newView === 'feedback') {
+      getUserReports()
+    }
+  })//单开一项watch
 
 </script>
 
@@ -1025,7 +1030,7 @@
   }
 
   .btn-primary {
-    background-color: #3498db;
+    background-color: #804c9c;
     color: white;
     padding: 10px 15px;
     border: none;
@@ -1033,15 +1038,15 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 5px;
+    transition: all 0.3s;
   }
 
   .btn-primary:hover {
-    background-color: #2980b9;
+    background-color: #592675;
   }
 
-  .btn-success {
-    background-color: #2ecc71;
+  .btn-danger {
+    background-color: #7cc423;
     color: white;
     padding: 8px 12px;
     border: none;
@@ -1049,11 +1054,27 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 5px;
+    transition: all 0.3s;
+  }
+
+  .btn-danger:hover {
+    background-color: #548717;
+  }
+
+  .btn-success {
+    background-color: #b33e1e;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s;
   }
 
   .btn-success:hover {
-    background-color: #27ae60;
+    background-color: #772812;
   }
 
   .report-item {
