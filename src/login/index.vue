@@ -19,7 +19,7 @@
           </form>
           <form class="reg_log">
             <p><button @click="toggleForm()" class="button_">切换到注册</button></p>
-            <p><button @click="login()" class="button_">登录</button></p>
+            <p><button type="button" @click="login()" class="button_">登录</button></p>
           </form>
         </form>
       </div>
@@ -30,40 +30,42 @@
           <h1>注册账号</h1>
           <form class="login_info">
             <p><span class="label_">用户名：</span><input type="text" placeholder="请输入用户名" v-model="userName" class="input_label"></p>
-            <p><span class="label_">邮箱账号：</span><input type="text" placeholder="请输入邮箱" v-model="mailBox" class="input_label"></p>
+            <p><span class="label_">姓名：</span><input type="text" placeholder="请输入姓名" v-model="name" class="input_label"></p>
             <p><span class="label_">密码：</span><input type="password" placeholder="请输入密码" v-model="passWord" class="input_label"></p>
+            <p><span class="label_">用户类型：</span>普通用户<input type="radio" v-model="userType" name="usertype" value=1>管理员<input type="radio" v-model="userType" name="usertype" value=2></p>
+
           </form>
           <form class="reg_log">
             <p><button @click="toggleForm()" class="button_">切换到登录</button></p>
-            <p><button type="submit" @click="registion()" class="button_">注册</button></p>
+            <p><button type="button" @click="registion()" class="button_">注册</button></p>
           </form>
         </form>
       </div>
     </div>
-    <div v-else > 
+    <div v-else >
     </div>
-  </div> 
+  </div>
 </template>
 
 
 <script lang="ts" setup>
   import axios from 'axios';
-  import { ref,watch } from 'vue';
+  import { computed, ref,watch } from 'vue';
   import { useStore } from 'vuex'
   import { createRouter, RouterLink, useRoute, useRouter } from 'vue-router'
   const router = useRouter()
   const store = useStore()
   const route = useRoute()
 
-  let userName=ref()
-  let passWord=ref()
-  let mailBox=ref()
-  let reg_log_toggle=ref('formA')
-  let loginSuccess=ref(false)
-  let isLogin=ref(false)
+  const userName=ref()
+  const passWord=ref()
+  const name=ref()
+  const reg_log_toggle=ref('formA')
+  const loginSuccess=ref(false)
+  const isLogin=ref(false)
+  const userType=ref()
 
-  const url ="http://127.0.0.1:4523/m1/7007008-6725558-default"
-  
+
   watch(() => route.path, (newPath) => {
     if (newPath === '/login') {
       // 重置登录状态
@@ -76,7 +78,7 @@
   }, { immediate: true })
   function toggleForm(this: any) {
       this.reg_log_toggle = this.reg_log_toggle === 'formA' ? 'formB' : 'formA';
-  } 
+  }
   function view_(){
     if (true) {
       router.push('/');
@@ -88,40 +90,55 @@
       username: userName.value,
       password: passWord.value,
     }
-    
-    axios.post(url+target,body)
-    .then(Response=>{
-      console.log(Response)
+
+    axios.post(target, body)
+      .then(response => {
+        console.log("完整响应对象:", response);
+        const responseData = {
+          code: response.data.code,
+          user_type: response.data.data.user_type,
+          user_id: response.data.data.user_id
+        };
+
+        if (responseData.code === 200) {
+        loginSuccess.value = true;
+        setTimeout(() => {
+          isLogin.value = true;
+          store.dispatch('login', {
+            name: userName.value,
+            user_id: responseData.user_id,
+            user_type: responseData.user_type})
+            .then(() => {
+              router.push('/');
+            })
+          }, 1500)
+        }
+
     })
-
-    if (userName.value === 'user' && passWord.value === '123') {
-      loginSuccess.value = true;
-      setTimeout(() => {
-        isLogin.value = true;       
-        store.dispatch('login', {
-          name: userName.value})
-          .then(() => {
-            router.push('/');
-          })
-        }, 1500);
-    }
-
-    if (userName.value === 'admin' && passWord.value === '123') {
-      loginSuccess.value = true;
-      setTimeout(() => {
-        isLogin.value = true;       
-        store.dispatch('login', {
-          name: userName.value})
-          .then(() => {
-            router.push('/');
-          })
-        }, 1500);
-    }
   }
 
   function registion(){
+    console.log(userType)
+    const target = "/api/user/reg"
+    const body ={
+      username: userName.value,
+      name: name.value,
+      password: passWord.value,
+      user_type: Number(userType.value)
+    }
 
+    axios.post(target, body)
+      .then(response => {
+        console.log("完整响应对象:", response);
+        const responseData = {
+          code: response.data.code,
+        };
+        if (responseData.code === 200) {
+        alert('注册成功')
+      }
+    })
   }
+
 </script>
 
 <style scoped>
@@ -129,8 +146,8 @@
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
-    
-    
+
+
     background: url("..\img\illust_122910410_20250306_005156(1).jpg");
     width: 820px;
     min-height: 430px;
@@ -140,14 +157,14 @@
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 10px;
-    
+
   }
   .login_container{
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    
+
     /* background-color: aqua;     */
     width: 400px;
     height: 250px;
@@ -183,7 +200,7 @@
     display: grid;
     place-items: center;
     height: min-content;
-    text-align: center; 
+    text-align: center;
   }
   .button_:hover{
     background: #b3d3fa;

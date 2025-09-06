@@ -1,6 +1,5 @@
 import { createStore } from 'vuex'
 
-// 新增：定义Report接口
 interface Report {
   id: string;
   postId: string;
@@ -9,28 +8,29 @@ interface Report {
   date: string;
 }
 
+interface Post {
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  date: string;
+  likes: number;
+}
+
 export default createStore({
   state: {
     user: null,
     posts: [],
-    // 新增：举报记录
-    reports: JSON.parse(localStorage.getItem('forumReports')) || []
+    reports: JSON.parse(localStorage.getItem('forumReports') || '[]')
   },
+  // 帖子相关mutations
   mutations: {
-    SET_USER(state, user: string) {
-      state.user = user
-    },
-    CLEAR_USER(state) {
-      state.user = null
-    },
-    // 帖子相关mutations
-    SET_POSTS(state, posts) {
-      state.posts = posts
-      localStorage.setItem('forumPosts', JSON.stringify(posts))
-    },
-    ADD_POST(state, post) {
-      state.posts.push(post)
-      localStorage.setItem('forumPosts', JSON.stringify(state.posts))
+    SET_POST_LIKES(state, { postId, likes }) {
+      const post = state.posts.find(p => p.id === postId);
+      if (post) {
+      post.likes = likes;
+      localStorage.setItem('forumPosts', JSON.stringify(state.posts));
+      }
     },
     UPDATE_POST(state, updatedPost) {
       const index = state.posts.findIndex(p => p.id === updatedPost.id)
@@ -39,18 +39,44 @@ export default createStore({
         localStorage.setItem('forumPosts', JSON.stringify(state.posts))
       }
     },
-    DELETE_POST(state, postId) {
+    SET_USER(state, user: string) {
+      state.user = user
+    },
+    CLEAR_USER(state) {
+      state.user = null
+    },
+    SET_POSTS(state, posts) {
+      state.posts = posts
+      localStorage.setItem('forumPosts', JSON.stringify(posts))
+    },
+    ADD_POST(state, post: Post) {
+      state.posts.push(post)
+      localStorage.setItem('forumPosts', JSON.stringify(state.posts))
+    },
+    UPDATE_POST(state, updatedPost: Post) {
+      const index = state.posts.findIndex(p => p.id === updatedPost.id)
+      if (index !== -1) {
+        state.posts[index] = { ...state.posts[index], ...updatedPost }
+        localStorage.setItem('forumPosts', JSON.stringify(state.posts))
+      }
+    },
+    DELETE_POST(state, postId: string) {
       state.posts = state.posts.filter(post => post.id !== postId)
       localStorage.setItem('forumPosts', JSON.stringify(state.posts))
     },
-    LIKE_POST(state, postId) {
+    LIKE_POST(state, postId: string) {
       const post = state.posts.find(p => p.id === postId)
       if (post) {
         post.likes = (post.likes || 0) + 1
         localStorage.setItem('forumPosts', JSON.stringify(state.posts))
       }
     },
-    // 新增：举报相关mutations
+    // 添加 clearPosts mutation
+    CLEAR_POSTS(state) {
+      state.posts = []
+      localStorage.setItem('forumPosts', JSON.stringify(state.posts))
+    },
+    //举报相关mutations
     ADD_REPORT(state, report: Report) {
       state.reports.push(report)
       localStorage.setItem('forumReports', JSON.stringify(state.reports))
@@ -72,20 +98,27 @@ export default createStore({
     logout({ commit }) {
       commit('CLEAR_USER')
     },
+    setPostLikes({ commit }, { postId, likes }) {
+      commit('SET_POST_LIKES', { postId, likes });
+    },
     // 帖子相关actions
-    addPost({ commit }, post) {
+    addPost({ commit }, post: Post) {
       commit('ADD_POST', post)
     },
-    updatePost({ commit }, updatedPost) {
+    updatePost({ commit }, updatedPost: Post) {
       commit('UPDATE_POST', updatedPost)
     },
-    deletePost({ commit }, postId) {
+    deletePost({ commit }, postId: string) {
       commit('DELETE_POST', postId)
     },
-    likePost({ commit }, postId) {
+    likePost({ commit }, postId: string) {
       commit('LIKE_POST', postId)
     },
-    // 新增：举报相关actions
+    // 添加 clearPosts action
+    clearPosts({ commit }) {
+      commit('CLEAR_POSTS')
+    },
+    //举报相关actions
     addReport({ commit }, reportData) {
       const report: Report = {
         id: Date.now().toString(),
@@ -96,7 +129,7 @@ export default createStore({
       }
       commit('ADD_REPORT', report)
     },
-    removeReport({ commit }, reportId) {
+    removeReport({ commit }, reportId: string) {
       commit('REMOVE_REPORT', reportId)
     }
   },
@@ -107,15 +140,17 @@ export default createStore({
     name: state => state.user?.name || '匿名用户',
     // 获取帖子
     getPosts: state => state.posts,
-    // 新增：获取举报记录
+    //获取举报记录
     getReports: state => state.reports,
-    // 新增：获取特定帖子的举报记录
+    //获取特定帖子的举报记录
     getReportsForPost: state => (postId: string) => {
       return state.reports.filter(report => report.postId === postId)
     },
-    // 新增：获取举报数量
+    //获取举报数量
     getReportCount: state => (postId: string) => {
       return state.reports.filter(report => report.postId === postId).length
-    }
+    },
+    user_id: state => state.user?.user_id || 0,
+    user_type: state => state.user?.user_type || 1,
   }
 })
