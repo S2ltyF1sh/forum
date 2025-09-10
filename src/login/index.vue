@@ -47,208 +47,23 @@
 </template>
 
 
-<script lang="ts" setup>
-  import axios from 'axios';
-  import { computed, ref,watch } from 'vue';
-  import { useStore } from 'vuex'
-  import { createRouter, RouterLink, useRoute, useRouter } from 'vue-router'
-  const router = useRouter()
-  const store = useStore()
-  const route = useRoute()
+<script setup lang="ts">
+  import { useLoginLogic } from './index'
 
-  const userName=ref()
-  const passWord=ref()
-  const name=ref()
-  const reg_log_toggle=ref('formA')
-  const loginSuccess=ref(false)
-  const isLogin=ref(false)
-  const userType=ref()
-
-
-  watch(() => route.path, (newPath) => {
-    if (newPath === '/login') {
-      // 重置登录状态
-      isLogin.value = false
-      loginSuccess.value = false
-      userName.value = ''
-      passWord.value = ''
-      reg_log_toggle.value = 'formA'
-    }
-  }, { immediate: true })
-  function toggleForm(this: any) {
-      this.reg_log_toggle = this.reg_log_toggle === 'formA' ? 'formB' : 'formA';
-  }
-  function view_(){
-    if (true) {
-      router.push('/');
-    }
-  }
-  function login(){
-    const target = "/api/user/login"
-    const body ={
-      username: userName.value,
-      password: passWord.value,
-    }
-
-    axios.post(target, body)
-      .then(response => {
-        console.log("完整响应对象:", response);
-        const responseData = {
-          code: response.data.code,
-          user_type: response.data.data.user_type,
-          user_id: response.data.data.user_id
-        };
-
-        if (responseData.code === 200) {
-        loginSuccess.value = true;
-        setTimeout(() => {
-          isLogin.value = true;
-          store.dispatch('login', {
-            name: userName.value,
-            user_id: responseData.user_id,
-            user_type: responseData.user_type})
-            .then(() => {
-              router.push('/');
-            })
-          }, 1500)
-        }
-
-    })
-  }
-
-  function registion(){
-    console.log(userType)
-    const target = "/api/user/reg"
-    const body ={
-      username: userName.value,
-      name: name.value,
-      password: passWord.value,
-      user_type: Number(userType.value)
-    }
-
-    axios.post(target, body)
-      .then(response => {
-        console.log("完整响应对象:", response);
-        const responseData = {
-          code: response.data.code,
-        };
-        if (responseData.code === 200) {
-        alert('注册成功')
-      }
-    })
-  }
-
+  const {
+    userName,
+    passWord,
+    name,
+    reg_log_toggle,
+    loginSuccess,
+    isLogin,
+    userType,
+    toggleForm,
+    login,
+    registion
+  } = useLoginLogic()
 </script>
 
 <style scoped>
-  .login_{
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
-
-
-    background: url("..\img\illust_122910410_20250306_005156(1).jpg");
-    width: 820px;
-    min-height: 430px;
-    background-color: #e3e5e7;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 10px;
-
-  }
-  .login_container{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-
-    /* background-color: aqua;     */
-    width: 400px;
-    height: 250px;
-    animation: fadeIn 0.7s;
-  }
-  .login_container h1{
-    color: #96a5e9;
-  }
-  .login_info{
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-
-    place-items: center;
-    width: 300px;
-    min-height: 90px;
-    border: 2px solid #e3e5e7;
-    border-radius: 8px;
-    font-style: normal;
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 20px;
-    color: #212121;
-  }
-
-  .reg_log{
-    display: flex;
-    justify-content: center;
-
-    width: 304px;
-  }
-  .login_container h1{
-    display: grid;
-    place-items: center;
-    height: min-content;
-    text-align: center;
-  }
-  .button_:hover{
-    background: #b3d3fa;
-    color: rgb(54, 107, 180);
-  }
-  .button_{
-    display: grid;
-    place-items: center;
-
-    width: 130px;
-    height: 40px;
-    margin: 0px 20px;
-    border: 2px solid #e3e5e7;
-    border-radius: 8px;
-    background-color: #c9dce2;
-    font-size: large;
-    transition:0.3s;
-    font-weight: 600;
-    color: rgb(92, 159, 253);
-    font-family: 'Segoe UI';
-  }
-  input:focus {
-    border-color: #6c5ce7;
-    outline: none;
-  }
-  .input_label{
-    border: 2px solid #e4f7ff;
-    width: 180px;
-    height: 30px;
-    border-radius: 5px;
-    padding: 7px;
-    transition: border 0.3s;
-  }
-  .label_ {
-    display: inline-block;
-    width: 80px;
-    text-align: right;
-    margin-right: 5px;
-    font-size: 15px;
-  }
-  .fade-enter-from, .fade-leave-to {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity 0.5s, transform 0.5s;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+@import './index.css';
 </style>
