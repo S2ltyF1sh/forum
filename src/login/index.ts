@@ -3,7 +3,7 @@ import { useStore } from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios';
 
-export function useLoginLogic() {
+export function ts() {
   const router = useRouter()
   const store = useStore()
   const route = useRoute()

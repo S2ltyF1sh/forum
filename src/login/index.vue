@@ -48,7 +48,7 @@
 
 
 <script setup lang="ts">
-  import { useLoginLogic } from './index'
+  import { ts } from './index'
 
   const {
     userName,
@@ -61,7 +61,7 @@
     toggleForm,
     login,
     registion
-  } = useLoginLogic()
+  } = ts()
 </script>
 
 <style scoped>
