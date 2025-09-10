@@ -1,4 +1,4 @@
-import { useStore } from 'vuex'
+import useStore from 'vuex'
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router'
 

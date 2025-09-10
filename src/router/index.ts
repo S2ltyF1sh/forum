@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import login from '@/login/index.vue'
-import view from '@/main/index.vue'
-import post from '@/components/post.vue'
-import aside from '@/components/aside.vue'
+import login from '@/login/indexLogin.vue'
+import view from '@/main/indexMain.vue'
+import post from '@/components/mainPost.vue'
+import aside from '@/components/leftAside.vue'
 const routes = [
   {
     path: '/login',

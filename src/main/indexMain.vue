@@ -49,14 +49,15 @@
       </div>
       <div class="main_container">
         <Post :currentView="currentView" />
+        <!-- 可以更具currentView的状态细化Post页面，将components/Post细化为各个组块 -->
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import Aside from '@/components/aside.vue';
-  import Post from '@/components/post.vue'
+  import Aside from '@/components/leftAside.vue';
+  import Post from '@/components/mainPost.vue'
   import { ts } from './index';
 
   const {

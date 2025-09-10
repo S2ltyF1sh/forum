@@ -1,8 +1,44 @@
 import { ref, reactive, computed, onMounted, watch } from 'vue'
-import { useStore } from 'vuex'
+import useStore from 'vuex'
 import axios from 'axios'
 
-export function ts(props: any) {
+interface UnapprovedReport {
+  report_id: number;
+  post_id: number;
+  username: string;
+  content: string;
+  reason: string;
+}
+
+interface UserReport {
+  post_id: number;
+  content: string;
+  reason: string;
+  status: number;
+}
+
+interface Post {
+  id: string;
+  title: string;
+  content: string;
+  author: string;
+  date: string;
+  likes: number;
+}
+
+interface ApiPost {
+  id: number;
+  content: string;
+  user_id: number;
+  time: string;
+  likes: number;
+}
+
+interface Props {
+  currentView: string;
+}
+
+export function ts(props: Props) {
   const store = useStore()
 
   const posts = computed(() => store.state.posts || [])
@@ -15,8 +51,8 @@ export function ts(props: any) {
   const currentReportPostId = ref('')
   const user_id = computed(() => store.getters.user_id)
   const user_type = computed(() => store.getters.user_type)
-  const userReports = ref([])
-  const unapprovedReports = ref([])
+  const userReports = ref<UserReport[]>([])
+  const unapprovedReports = ref<UnapprovedReport[]>([])
 
   const currentPost = reactive({
     id: null,
@@ -43,7 +79,7 @@ export function ts(props: any) {
   })
 
   const sortedPosts = computed(() => {
-    return [...posts.value].sort((a, b) => new Date(b.date) - new Date(a.date))
+    return [...posts.value].sort((a, b) => +new Date(b.date) - +new Date(a.date))
   })
 
   const likePost = (id: string) => {
@@ -167,7 +203,7 @@ export function ts(props: any) {
         if (response.data.code === 200 || response.data.code === 0) {
           alert(approval === 1 ? '举报已通过' : '举报已驳回');
           unapprovedReports.value = unapprovedReports.value.filter(
-            (report: any) => report.report_id !== reportId
+            (report: UnapprovedReport) => report.report_id !== reportId
           );
         } else {
           alert('审批操作失败: ' + response.data.msg);
@@ -183,7 +219,7 @@ export function ts(props: any) {
     isEditing.value = mode === 'edit'
 
     if (mode === 'edit' && postId) {
-      const post = posts.value.find((p: any) => p.id === postId)
+      const post = posts.value.find((p: Post) => p.id === postId)
       if (post) {
         currentPost.id = post.id
         currentPost.title = post.title
@@ -310,7 +346,7 @@ export function ts(props: any) {
         if (response.data.code === 200) {
           const postList = response.data.data.post_list;
           store.dispatch('clearPosts');
-          postList.forEach((post: any) => {
+          postList.forEach((post: ApiPost) => {
             store.dispatch('addPost', {
               id: post.id.toString(),
               title: post.content,
