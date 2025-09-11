@@ -1,5 +1,5 @@
 import { ref, watch } from 'vue';
-import useStore from 'vuex'
+import {useStore} from 'vuex'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios';
 

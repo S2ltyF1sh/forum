@@ -1,4 +1,4 @@
-import createStore from 'vuex'
+import {createStore} from 'vuex'
 
 interface Report {
   id: string;
@@ -91,39 +91,39 @@ export default createStore<State>({
     }
   },
   actions: {
-    login({ commit }, user: User) {
+    login(context, user: User) {
       return new Promise<void>((resolve) => {
         setTimeout(() => {
-          commit('SET_USER', user);
+          context.commit('SET_USER', user);
           resolve();
         }, 100);
       });
     },
-    logout({ commit }) {
-      commit('CLEAR_USER');
+    logout(context) {
+      context.commit('CLEAR_USER');
     },
-    setPostLikes({ commit }, payload: { postId: string; likes: number }) {
-      commit('SET_POST_LIKES', payload);
+    setPostLikes(context, payload: { postId: string; likes: number }) {
+      context.commit('SET_POST_LIKES', payload);
     },
     // 帖子相关actions
-    addPost({ commit }, post: Post) {
-      commit('ADD_POST', post);
+    addPost(context, post: Post) {
+      context.commit('ADD_POST', post);
     },
-    updatePost({ commit }, updatedPost: Post) {
-      commit('UPDATE_POST', updatedPost);
+    updatePost(context, updatedPost: Post) {
+      context.commit('UPDATE_POST', updatedPost);
     },
-    deletePost({ commit }, postId: string) {
-      commit('DELETE_POST', postId);
+    deletePost(context, postId: string) {
+      context.commit('DELETE_POST', postId);
     },
-    likePost({ commit }, postId: string) {
-      commit('LIKE_POST', postId);
+    likePost(context, postId: string) {
+      context.commit('LIKE_POST', postId);
     },
     // 添加 clearPosts action
-    clearPosts({ commit }) {
-      commit('CLEAR_POSTS')
+    clearPosts(context) {
+      context.commit('CLEAR_POSTS')
     },
     //举报相关actions
-   addReport({ commit }, reportData: { postId: string; username: string; reason: string }) {
+   addReport(context, reportData: { postId: string; username: string; reason: string }) {
       const report: Report = {
         id: Date.now().toString(),
         postId: reportData.postId,
@@ -131,10 +131,10 @@ export default createStore<State>({
         reason: reportData.reason,
         date: new Date().toISOString()
       };
-      commit('ADD_REPORT', report);
+      context.commit('ADD_REPORT', report);
     },
-    removeReport({ commit }, reportId: string) {
-      commit('REMOVE_REPORT', reportId);
+    removeReport(context, reportId: string) {
+      context.commit('REMOVE_REPORT', reportId);
     }
   },
   getters: {

@@ -1,5 +1,5 @@
 import { ref, reactive, computed, onMounted, watch } from 'vue'
-import useStore from 'vuex'
+import {useStore} from 'vuex'
 import axios from 'axios'
 
 interface UnapprovedReport {
